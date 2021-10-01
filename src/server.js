@@ -16,10 +16,10 @@ app.get('/list', (req, res) => {
 
 app.get('/image/:id', (req, res) => {
     const imgId = req.params.id;
-    const link = db.findOne(imgId);
-    if (link) {
-        res.type('jpg');
-        res.sendFile(link);
+    const img = db.findOne(imgId);
+    if (img) {        
+        res.type(img.type);
+        res.sendFile(img.link);
     } else {
         res.status(404);
         res.end('Not found');
@@ -28,9 +28,9 @@ app.get('/image/:id', (req, res) => {
 
 app.delete('/image/:id', (req, res) => {
     const imgId = req.params.id;
-    const link = db.findOne(imgId);
-    if (link) {
-        db.remove(imgId)
+    const img = db.findOne(imgId);
+    if (img) {
+        db.remove(img);
         res.status(200);
         res.send('Resource deleted successfully');
     } else {
@@ -47,12 +47,12 @@ app.get('/merge', (req, res) => {
         res.end('Bad request');
     }    
     
-    let linkFront = db.findOne(req.query.front);
-    let linkBack = db.findOne(req.query.back);
+    let imgFront = db.findOne(req.query.front);
+    let imgBack = db.findOne(req.query.back);
 
-    if(linkFront && linkBack) {
-        const front = fs.createReadStream(linkFront);
-        const back = fs.createReadStream(linkBack);
+    if(imgFront && imgBack) {
+        const front = fs.createReadStream(imgFront.link);
+        const back = fs.createReadStream(imgBack.link);
         let color, threshold;
         if(req.query.color) color = req.query.color.split(',');
         if(req.query.threshold) threshold = new Number(req.query.threshold);
@@ -60,7 +60,7 @@ app.get('/merge', (req, res) => {
 
         replaceBackground(front, back, color, threshold)
         .then((readableStream) => {
-            res.type('jpg');
+            res.type(imgFront.type);
             readableStream.pipe(res);    
         });
     }else {
@@ -73,7 +73,7 @@ app.get('/merge', (req, res) => {
 
 app.post('/upload', (req, res) => {
     const { file } = req;
-    if(file && file.mimetype === 'image/jpeg') {         
+    if(file && (file.mimetype === 'image/jpeg' || file.mimetype === "image/png")) {         
         const img = new Img(file);
         db.insert(img);
         res.json(img.getInfo());

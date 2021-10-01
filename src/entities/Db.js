@@ -28,7 +28,7 @@ class Database extends EventEmitter {
   }
 
   async insert(img) {
-    await writeFile(path.resolve(imgFolder, img.fileName), img.body);
+    await writeFile(img.link, img.body);
     this.data[img.id] = img.getInfo();
     this.emit('changed');    
   }
@@ -40,23 +40,16 @@ class Database extends EventEmitter {
   getData() {
     return this.data;
   }
-  async remove(imgId) {
-
-    const fileName = imgId + '.jpg'
-
-    await removeFile(path.resolve(imgFolder, fileName));
-
-    delete this.data[imgId];
-
+  async remove(img) {   
+    await removeFile(img.link);
+    delete this.data[img.id];
     this.emit('changed');
-
-    return imgId;
+    return;
   }
 
   findOne(imgId) {
-    if(this.getList().some(el => el.id === imgId)) {
-      const fileName = imgId + '.jpg';      
-      return path.resolve(imgFolder, fileName)
+    if(this.data[imgId]) {      
+      return this.data[imgId]
     }else {
       return null
     }
