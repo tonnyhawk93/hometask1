@@ -25,7 +25,8 @@ app.get('/image/:id', (req, res) => {
     const imgId = req.params.id;
     const link = db.findOne(imgId);
     if (link) {
-        res.download(link);
+        res.type('jpg');
+        res.sendFile(link);
     } else {
         res.status(404);
         res.end();
@@ -37,7 +38,8 @@ app.delete('/image/:id', (req, res) => {
     const link = db.findOne(imgId);
     if (link) {
         db.remove(imgId)
-        res.send(imgId);
+        res.status(204);
+        res.send('Resource deleted successfully');
     } else {
         res.status(400);
         res.end('Bad request');
@@ -51,15 +53,27 @@ app.get('/merge', (req, res) => {
         res.status(400);
         res.end('Bad request');
     }    
-    const front = fs.createReadStream(db.findOne(req.query.front));
-    const back = fs.createReadStream(db.findOne(req.query.back));
-    let color, threshold;
-    if(req.query.color) color = req.query.color.split(',');
-    if(req.query.threshold) threshold = new Number(req.query.threshold);
     
+    let linkFront = db.findOne(req.query.front);
+    let linkBack = db.findOne(req.query.back);
 
-    replaceBackground(front, back, color, threshold)
-        .then(readableStream => readableStream.pipe(res));
+    if(linkFront && linkBack) {
+        const front = fs.createReadStream(linkFront);
+        const back = fs.createReadStream(linkBack);
+        let color, threshold;
+        if(req.query.color) color = req.query.color.split(',');
+        if(req.query.threshold) threshold = new Number(req.query.threshold);
+        
+
+        replaceBackground(front, back, color, threshold)
+        .then((readableStream) => {
+            res.type('jpg');
+            readableStream.pipe(res);    
+        });
+    }else {
+        res.status(400);
+        res.end('Bad request'); 
+    }    
 })
 
 
@@ -69,7 +83,7 @@ app.post('/upload', (req, res) => {
     if(file && file.mimetype === 'image/jpeg') {         
         const img = new Img(file);
         db.insert(img);
-        res.send(img.getInfo());
+        res.json(img.getInfo());
     }else {
         res.status(400);
         res.end('Bad request');
