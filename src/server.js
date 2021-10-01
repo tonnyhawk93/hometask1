@@ -4,7 +4,8 @@ const { replaceBackground } = require('backrem');
 const app = express();
 const multer = require('multer');
 const upload = multer();
-const { PORT } = require('./config')
+const { PORT, imgFolder} = require('./config');
+const path = require('path');
 const Img = require('./entities/Img');
 const db = require('./entities/Db');
 
@@ -61,9 +62,15 @@ app.get('/merge', (req, res) => {
         replaceBackground(front, back, color, threshold)
         .then((readableStream) => {
             res.type(imgFront.type);
-            readableStream.pipe(res);    
+            let link = path.resolve(imgFolder, `./result.${imgFront.type}`)
+            const writableStream = fs.createWriteStream(link);
+            readableStream.pipe(writableStream);  
+            readableStream.on('end', ()=>{
+                res.sendFile(link);
+            })
         })
-        .catch(()=>{
+        .catch((e)=>{
+            console.log(e)
             res.status(400);
             res.end('Bad request');    
         })
