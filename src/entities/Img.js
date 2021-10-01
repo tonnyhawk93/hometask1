@@ -3,17 +3,26 @@ const {generateId} = require('../utils/generateId');
 module.exports = class Img {
   constructor(file) {
     this.id = generateId();
-    this.createdAt = Date.now();
-    this.fileName = `${this.id}.jpg`;
-    this.data = file.buffer;
+    this.uploadedAt = Date.now();    
+    this.body = file.buffer;
     this.size = file.size;
+    this.mimeType = file.mimetype;
+    this.fileName = `${this.id}.jpg`;
   }
 
   getInfo() {
     return {
       id: this.id,
+      uploadedAt: this.uploadedAt,
       size: this.size, 
-      createdAt: this.createdAt      
+      body: this.body, 
+      mimeType: this.mimeType   
     };
   }
 };
+
+
+  
+  
+
+  

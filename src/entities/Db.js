@@ -28,7 +28,7 @@ class Database extends EventEmitter {
   }
 
   async insert(img) {
-    await writeFile(path.resolve(imgFolder, img.fileName), img.data);
+    await writeFile(path.resolve(imgFolder, img.fileName), img.body);
     this.data[img.id] = img.getInfo();
     this.emit('changed');    
   }
