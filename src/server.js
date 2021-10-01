@@ -32,7 +32,7 @@ app.delete('/image/:id', (req, res) => {
     if (img) {
         db.remove(img);
         res.status(200);
-        res.send('Resource deleted successfully');
+        res.end();
     } else {
         res.status(400);
         res.end('Bad request');
