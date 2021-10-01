@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const dbFolder = path.resolve(__dirname, '../db/')
 const imgFolder = path.resolve(dbFolder, './images/');
 const dbDumpFile = path.resolve(dbFolder, './dump.json');

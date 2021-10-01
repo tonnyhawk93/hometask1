@@ -1,8 +1,7 @@
 const { EventEmitter } = require('events');
-const {imgFolder, dbDumpFile} = require('../config')
+const { dbDumpFile} = require('../config')
 const { writeFile, removeFile } = require('../utils/fs');
 const { existsSync } = require('fs');
-const path = require('path');
 const { prettifyJsonToString } = require('../utils/prettifyJsonToString');
 
 class Database extends EventEmitter {

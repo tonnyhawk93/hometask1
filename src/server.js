@@ -62,15 +62,9 @@ app.get('/merge', (req, res) => {
         replaceBackground(front, back, color, threshold)
         .then((readableStream) => {
             res.type(imgFront.type);
-            let link = path.resolve(imgFolder, `./result.${imgFront.type}`)
-            const writableStream = fs.createWriteStream(link);
-            readableStream.pipe(writableStream);  
-            readableStream.on('end', ()=>{
-                res.sendFile(link);
-            })
+            readableStream.pipe(res);
         })
-        .catch((e)=>{
-            console.log(e)
+        .catch(()=>{
             res.status(400);
             res.end('Bad request');    
         })
