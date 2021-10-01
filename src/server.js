@@ -62,7 +62,11 @@ app.get('/merge', (req, res) => {
         .then((readableStream) => {
             res.type(imgFront.type);
             readableStream.pipe(res);    
-        });
+        })
+        .catch(()=>{
+            res.status(400);
+            res.end('Bad request');    
+        })
     }else {
         res.status(400);
         res.end('Bad request'); 
