@@ -10,13 +10,6 @@ const db = require('./entities/Db');
 
 app.use(upload.single('image'));
 
-app.get('/', (req, res) => {
-    res.send(`<form method="post" enctype="multipart/form-data" action="/upload">
-                <input type="file" name="image">
-                <input type="submit" value="Submit">
-                </form>`);
-})
-
 app.get('/list', (req, res) => {
     res.json(db.getList());
 })
@@ -29,7 +22,7 @@ app.get('/image/:id', (req, res) => {
         res.sendFile(link);
     } else {
         res.status(404);
-        res.end();
+        res.end('Not found');
     }
 })
 
@@ -38,7 +31,7 @@ app.delete('/image/:id', (req, res) => {
     const link = db.findOne(imgId);
     if (link) {
         db.remove(imgId)
-        res.status(204);
+        res.status(200);
         res.send('Resource deleted successfully');
     } else {
         res.status(400);

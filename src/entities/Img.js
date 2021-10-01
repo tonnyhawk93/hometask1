@@ -15,7 +15,6 @@ module.exports = class Img {
       id: this.id,
       uploadedAt: this.uploadedAt,
       size: this.size, 
-      body: this.body, 
       mimeType: this.mimeType   
     };
   }
